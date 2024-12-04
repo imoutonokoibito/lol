@@ -1,0 +1,16 @@
+# List of champions to pick from in order of preference
+picks = [
+    "Teemo",
+    "Annie",
+    "Ashe",
+    "Master Yi",
+    "Garen",
+]
+
+# List of champions to ban in order of preference 
+bans = [
+    "Katarina",
+    "Yone",
+    "Veigar",
+    "Lee Sin",
+]
