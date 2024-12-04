@@ -1,5 +1,0 @@
-asyncio
-requests
-urllib3
-toml
-lcu_driver
