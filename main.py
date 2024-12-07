@@ -32,20 +32,27 @@ pick_number = 0
 ban_number = 0
 
 
+async def get_champions_map():
+    # Get champion data from Data Dragon for English names
+    ddragon_version = requests.get('https://ddragon.leagueoflegends.com/api/versions.json').json()[0]
+    ddragon_champions = requests.get(f'https://ddragon.leagueoflegends.com/cdn/{ddragon_version}/data/en_US/champion.json').json()
+    champion_key_to_name = {int(champ['key']): name for name, champ in ddragon_champions['data'].items()}
+    
+    champions_map = champion_key_to_name
+
+    print(f"{len(champions_map)=}", f"{champions_map=}")
+            
+    return champions_map
+
 @connector.ready
 async def connect(connection):
     global summoner_id, champions_map
-    temp_champions_map = {}
     summoner = await connection.request('get', '/lol-summoner/v1/current-summoner')
     summoner_to_json = await summoner.json()
     summoner_id = summoner_to_json['summonerId']
-    champion_list = await connection.request('get', f'/lol-champions/v1/inventories/{summoner_id}/champions-minimal')
-
-    champion_list_to_json = await champion_list.json()
-    for i in range(len(champion_list_to_json)):
-        temp_champions_map.update({champion_list_to_json[i]['name']: champion_list_to_json[i]['id']})
-    champions_map = temp_champions_map
-
+    
+    champions_map = await get_champions_map()
+asyncio.run(get_champions_map())
 
 @connector.ws.register('/lol-matchmaking/v1/ready-check', event_types=('UPDATE',))
 async def ready_check_changed(connection, event):
