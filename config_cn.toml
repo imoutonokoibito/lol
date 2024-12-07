@@ -1,0 +1,16 @@
+# List of champions to pick from in order of preference
+picks = [
+    "提莫",
+    "安妮", 
+    "艾希",
+    "易大师",
+    "盖伦",
+]
+
+# List of champions to ban in order of preference 
+bans = [
+    "卡特琳娜",
+    "永恩",
+    "维迦",
+    "李青",
+]
