@@ -84,7 +84,7 @@ async def champ_select_changed(connection, event):
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champions_map[bans[ban_number]], "completed": True})
                 print(f"Successfully banned {bans[ban_number]}")
-                ban_number += 1
+                ban_number = 0  # Reset ban number after successful ban
                 am_i_banning = False
             except Exception as e:
                 print(f"Failed to ban {bans[ban_number]}: {str(e)}")
@@ -101,6 +101,7 @@ async def champ_select_changed(connection, event):
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champions_map[picks[pick_number]], "completed": True})
                 print(f"Successfully picked {picks[pick_number]}")
+                pick_number = 0  # Reset pick number after successful pick
                 am_i_picking = False
             except Exception as e:
                 print(f"Failed to pick {picks[pick_number]}: {str(e)}")
