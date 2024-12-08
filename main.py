@@ -36,9 +36,10 @@ async def get_champions_map():
     # Get champion data from Data Dragon for English names
     ddragon_version = requests.get('https://ddragon.leagueoflegends.com/api/versions.json').json()[0]
     ddragon_champions = requests.get(f'https://ddragon.leagueoflegends.com/cdn/{ddragon_version}/data/en_US/champion.json').json()
-    champion_key_to_name = {int(champ['key']): name for name, champ in ddragon_champions['data'].items()}
+    # Swap key and value to map from name to ID instead
+    champion_name_to_key = {name: int(champ['key']) for name, champ in ddragon_champions['data'].items()}
     
-    champions_map = champion_key_to_name
+    champions_map = champion_name_to_key
 
     print(f"{len(champions_map)=}", f"{champions_map=}")
             
@@ -90,8 +91,9 @@ async def champ_select_changed(connection, event):
                 print(f"Full error: {traceback.format_exc()}")
                 ban_number += 1
                 if ban_number >= len(bans):
-                    print("Reached end of ban list, resetting to start")
-                    ban_number = 0
+                    print("Exhausted all ban options, stopping ban attempts")
+                    am_i_banning = False
+                    break
 
     if phase == 'pick' and lobby_phase == 'BAN_PICK' and am_i_picking:
         while am_i_picking:
@@ -106,8 +108,9 @@ async def champ_select_changed(connection, event):
                 print(f"Full error: {traceback.format_exc()}")
                 pick_number += 1
                 if pick_number >= len(picks):
-                    print("Reached end of pick list, resetting to start")
-                    pick_number = 0
+                    print("Exhausted all pick options, stopping pick attempts")
+                    am_i_picking = False
+                    break
 
     if lobby_phase == 'PLANNING' and not have_i_prepicked:
         try:

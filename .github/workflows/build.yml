@@ -27,3 +27,4 @@ jobs:
       with:
         name: lolq
         path: dist/
+        permissions: read-all
