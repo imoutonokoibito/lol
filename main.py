@@ -46,13 +46,8 @@ async def get_champions_map():
 
 @connector.ready
 async def connect(connection):
-    global summoner_id, champions_map
-    summoner = await connection.request('get', '/lol-summoner/v1/current-summoner')
-    summoner_to_json = await summoner.json()
-    summoner_id = summoner_to_json['summonerId']
-    
+    global champions_map
     champions_map = await get_champions_map()
-asyncio.run(get_champions_map())
 
 @connector.ws.register('/lol-matchmaking/v1/ready-check', event_types=('UPDATE',))
 async def ready_check_changed(connection, event):
@@ -100,6 +95,7 @@ async def champ_select_changed(connection, event):
 
     if phase == 'pick' and lobby_phase == 'BAN_PICK' and am_i_picking:
         while am_i_picking:
+            print(f"{champions_map=}")
             try:
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champions_map[picks[pick_number]], "completed": True})
