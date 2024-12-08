@@ -79,7 +79,7 @@ async def champ_select_changed(connection, event):
                     am_i_picking = actionArr['isInProgress']
 
     if phase == 'ban' and lobby_phase == 'BAN_PICK' and am_i_banning:
-        while am_i_banning:
+        while am_i_banning and ban_number < len(bans):
             try:
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champions_map[bans[ban_number]], "completed": True})
@@ -92,8 +92,7 @@ async def champ_select_changed(connection, event):
                 ban_number += 1
                 if ban_number >= len(bans):
                     print("Exhausted all ban options, stopping ban attempts")
-                    am_i_banning = False
-                    break
+                am_i_banning = False
 
     if phase == 'pick' and lobby_phase == 'BAN_PICK' and am_i_picking:
         while am_i_picking:
@@ -124,16 +123,15 @@ async def champ_select_changed(connection, event):
 
     if lobby_phase == 'FINALIZATION':
         try:
-            request_game_data = requests.get('https://127.0.0.1:2999/liveclientdata/allgamedata', verify=False)
-            game_data = request_game_data.json()['gameData']['gameTime']
-            if game_data > 0 and not in_game:
+            game_state = await connection.request('get', '/lol-gameflow/v1/gameflow-phase')
+            if game_state == 'InGame' and not in_game:
                 print("Game started! Exiting champion select bot...")
                 in_game = True
                 exit(69)
             await asyncio.sleep(2)
         except Exception as e:
             print('Waiting for game to start...')
-            print(f"Game data request error: {str(e)}")
+            print(f"Error checking game state: {str(e)}")
             await asyncio.sleep(2)
 
 
