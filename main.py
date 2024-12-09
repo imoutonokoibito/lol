@@ -68,6 +68,8 @@ async def champ_select_changed(connection, event):
             assigned_position = teammate['assignedPosition']
             am_i_assigned = True
 
+    print(f'Assigned position: {assigned_position}')
+
     for action in event.data['actions']:
         for actionArr in action:
             if actionArr['actorCellId'] == local_player_cell_id and actionArr['isInProgress'] == True:
@@ -84,6 +86,7 @@ async def champ_select_changed(connection, event):
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champions_map[bans[ban_number]], "completed": True})
                 print(f"Successfully banned {bans[ban_number]}")
+                break
             except Exception as e:
                 print(f"Failed to ban {bans[ban_number]}: {str(e)}")
                 print(f"Full error: {traceback.format_exc()}")
@@ -100,6 +103,7 @@ async def champ_select_changed(connection, event):
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champions_map[picks[pick_number]], "completed": True})
                 print(f"Successfully picked {picks[pick_number]}")
+                break
             except Exception as e:
                 print(f"Failed to pick {picks[pick_number]}: {str(e)}")
                 print(f"Full error: {traceback.format_exc()}")
