@@ -70,6 +70,13 @@ async def champ_select_changed(connection, event):
 
     print(f'Assigned position: {assigned_position}')
 
+    # Get list of banned champions
+    banned_champions = []
+    for action_list in event.data['actions']:
+        for action in action_list:
+            if action['type'] == 'ban' and action['completed']:
+                banned_champions.append(action['championId'])
+
     for action in event.data['actions']:
         for actionArr in action:
             if actionArr['actorCellId'] == local_player_cell_id and actionArr['isInProgress'] == True:
@@ -100,8 +107,15 @@ async def champ_select_changed(connection, event):
         while am_i_picking and pick_number < len(picks):
             print(f"{champions_map=}")
             try:
+                # Check if champion is banned
+                champion_id = champions_map[picks[pick_number]]
+                if champion_id in banned_champions:
+                    print(f"{picks[pick_number]} is banned, trying next pick")
+                    pick_number += 1
+                    continue
+                
                 await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
-                                         data={"championId": champions_map[picks[pick_number]], "completed": True})
+                                         data={"championId": champion_id, "completed": True})
                 print(f"Successfully picked {picks[pick_number]}")
                 break
             except Exception as e:
