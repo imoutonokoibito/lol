@@ -230,11 +230,11 @@ def get_role_champions(assigned_position):
         'JUNGLE': 'jungle', 
         'MIDDLE': 'mid',
         'BOTTOM': 'bot',
-        'UTILITY': 'support'
+        'UTILITY': 'utility'
     }
     
     role_key = role_mapping.get(assigned_position, 'mid')
-    role_order = ['top', 'jungle', 'mid', 'bot', 'support']
+    role_order = ['top', 'jungle', 'mid', 'bot', 'utility']
     
     # Try assigned role first, then fallback to other roles
     for role in [role_key] + [r for r in role_order if r != role_key]:
@@ -451,8 +451,7 @@ async def set_runes(connection, rune_names):
             return
         
         # Get current rune pages to find one to replace
-        pages_response = await connection.request('get', '/lol-perks/v1/pages')
-        current_pages = pages_response
+        current_pages = await connection.request('get', '/lol-perks/v1/pages')
         
         # Delete the oldest editable page if we have too many, or find an AutoPick page to replace
         page_to_replace = None
