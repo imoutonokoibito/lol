@@ -1,0 +1,106 @@
+{
+  "bans": [
+    "Teemo",
+    "Annie",
+    "Ashe",
+    "Master Yi",
+    "Garen"
+  ],
+  "champions": {
+    "top": {
+      "order": [
+        {
+          "champion": "Aatrox",
+          "spells": ["flash", "teleport"],
+          "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "bone plating", "overgrowth", "adaptive force", "armor", "magic resist"]
+        },
+        {
+          "champion": "Darius",
+          "spells": ["flash", "ghost"],
+          "runes": []
+        },
+        {
+          "champion": "Garen",
+          "spells": [],
+          "runes": []
+        }
+      ]
+    },
+    "jungle": {
+      "order": [
+        {
+          "champion": "Graves",
+          "spells": ["flash", "smite"],
+          "runes": ["fleet footwork", "presence of mind", "legend alacrity", "coup de grace", "magical footwear", "approach velocity", "adaptive force", "armor", "magic resist"]
+        },
+        {
+          "champion": "Lee Sin",
+          "spells": ["flash", "smite"],
+          "runes": []
+        },
+        {
+          "champion": "Warwick",
+          "spells": [],
+          "runes": []
+        }
+      ]
+    },
+    "mid": {
+      "order": [
+        {
+          "champion": "Katarina",
+          "spells": ["flash", "ignite"],
+          "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "sudden impact", "relentless hunter", "attack speed", "health scaling", "tenacity"]
+        },
+        {
+          "champion": "Yone",
+          "spells": ["flash", "ignite"],
+          "runes": []
+        },
+        {
+          "champion": "Veigar",
+          "spells": [],
+          "runes": []
+        }
+      ]
+    },
+    "bot": {
+      "order": [
+        {
+          "champion": "Jinx",
+          "spells": ["flash", "heal"],
+          "runes": ["lethal tempo", "presence of mind", "legend alacrity", "coup de grace", "biscuit delivery", "approach velocity", "adaptive force", "armor", "magic resist"]
+        },
+        {
+          "champion": "Caitlyn",
+          "spells": ["flash", "heal"],
+          "runes": []
+        },
+        {
+          "champion": "Ashe",
+          "spells": [],
+          "runes": []
+        }
+      ]
+    },
+    "support": {
+      "order": [
+        {
+          "champion": "Thresh",
+          "spells": ["flash", "ignite"],
+          "runes": ["guardian", "font of life", "bone plating", "overgrowth", "biscuit delivery", "cosmic insight", "ability haste", "armor", "magic resist"]
+        },
+        {
+          "champion": "Lulu",
+          "spells": ["flash", "exhaust"],
+          "runes": []
+        },
+        {
+          "champion": "Soraka",
+          "spells": [],
+          "runes": []
+        }
+      ]
+    }
+  }
+}
