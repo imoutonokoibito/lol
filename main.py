@@ -451,7 +451,11 @@ async def set_runes(connection, rune_names):
             return
         
         # Get current rune pages to find one to replace
-        current_pages = await connection.request('get', '/lol-perks/v1/pages')
+        pages_response = await connection.request('get', '/lol-perks/v1/pages')
+        if hasattr(pages_response, 'json'):
+            current_pages = await pages_response.json()
+        else:
+            current_pages = pages_response
         
         # Delete the oldest editable page if we have too many, or find an AutoPick page to replace
         page_to_replace = None
