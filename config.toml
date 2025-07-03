@@ -1,16 +1,54 @@
-# List of champions to pick from in order of preference
-picks = [
-    "Katarina",
-    "Yone", 
-    "Veigar",
-    "Lee Sin",
+# Role-based champion configuration
+# Each role can have multiple champions with optional spells and runes
+# Available summoner spells: barrier, cleanse, exhaust, flash, ghost, heal, ignite, smite, teleport, clarity, mark
+# You can specify 0, 1, or 2 spells. If <2 spells, remaining slots stay unchanged.
+# 
+# Runes can be specified using fuzzy matching (case insensitive, ignores spaces/separators):
+# - For keystones: "conq" matches "Conqueror", "electro" matches "Electrocute"
+# - Major runes: first 4 selections determine primary tree, next 2 are secondary tree
+# - Minor runes: last 3 are stat runes (adaptive/armor/mr type selections)
+# - If runes not specified, client defaults will be used
+
+[champions.top]
+order = [
+    { champion = "Aatrox", spells = ["flash", "teleport"], runes = ["conqueror", "triumph", "legend alacrity", "last stand", "bone plating", "overgrowth", "adaptive force", "armor", "magic resist"] },
+    { champion = "Darius", spells = ["flash", "ghost"] },
+    "Garen"
 ]
 
-# List of champions to ban in order of preference 
+[champions.jungle] 
+order = [
+    { champion = "Graves", spells = ["flash", "smite"], runes = ["fleet footwork", "presence of mind", "legend alacrity", "coup de grace", "magical footwear", "approach velocity", "adaptive force", "armor", "magic resist"] },
+    { champion = "Lee Sin", spells = ["flash", "smite"] },
+    "Warwick"
+]
+
+[champions.mid]
+order = [
+    { champion = "Katarina", spells = ["flash", "ignite"], runes = ["conqueror", "triumph", "legend alacrity", "last stand", "sudden impact", "relentless hunter", "attack speed", "health scaling", "tenacity"] },
+    { champion = "Yone", spells = ["flash", "ignite"] },
+    "Veigar"
+]
+
+[champions.bot] 
+order = [
+    { champion = "Jinx", spells = ["flash", "heal"], runes = ["lethal tempo", "presence of mind", "legend alacrity", "coup de grace", "biscuit delivery", "approach velocity", "adaptive force", "armor", "magic resist"] },
+    { champion = "Caitlyn", spells = ["flash", "heal"] },
+    "Ashe"
+]
+
+[champions.support]
+order = [
+    { champion = "Thresh", spells = ["flash", "ignite"], runes = ["guardian", "font of life", "bone plating", "overgrowth", "biscuit delivery", "cosmic insight", "ability haste", "armor", "magic resist"] },
+    { champion = "Lulu", spells = ["flash", "exhaust"] },
+    "Soraka"
+]
+
+# Global ban list in order of preference
 bans = [
     "Teemo",
-    "Annie",
-    "Ashe", 
+    "Annie", 
+    "Ashe",
     "Master Yi",
     "Garen",
 ]
