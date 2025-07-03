@@ -3,7 +3,7 @@ import time
 import requests
 import urllib3
 import traceback
-import toml
+import json
 import re
 from lcu_driver import Connector
 
@@ -18,16 +18,22 @@ in_game = False
 phase = ''
 have_i_prepicked = False
 
-# Load config from config.toml
+# Load config from config.json
 try:
-    config = toml.load("config.toml")
+    with open("config.json", "r") as f:
+        config = json.load(f)
     champions_config = config.get("champions", {})
     bans = config.get("bans", [])
+    # Print configuration summary
+    for role, config in champions_config.items():
+        pick_count = len(config.get("order", []))
+        print(f"{role}: {pick_count} picks")
+    print(f"Bans: {len(bans)}")
     if not champions_config or not bans:
-        raise ValueError("Champions or bans configuration is missing in config.toml")
+        raise ValueError("Champions or bans configuration is missing in config.json")
 except Exception as e:
-    print(f"Error loading config.toml: {str(e)}")
-    print("Please ensure config.toml exists with valid champions and bans configuration")
+    print(f"Error loading config.json: {str(e)}")
+    print("Please ensure config.json exists with valid champions and bans configuration")
     exit(1)
 
 # Summoner spell mappings
