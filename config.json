@@ -10,14 +10,9 @@
     "top": {
       "order": [
         {
-          "champion": "Aatrox",
-          "spells": ["flash", "teleport"],
-          "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "bone plating", "overgrowth", "adaptive force", "armor", "magic resist"]
-        },
-        {
-          "champion": "Darius",
-          "spells": ["flash", "ghost"],
-          "runes": []
+          "champion": "Katarina",
+          "spells": ["flash", "ignite"],
+          "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "sudden impact", "relentless hunter", "attack speed", "health scaling", "tenacity"]
         },
         {
           "champion": "Garen",
@@ -28,10 +23,10 @@
     },
     "jungle": {
       "order": [
-        {
-          "champion": "Graves",
+          {
+          "champion": "Katarina",
           "spells": ["flash", "smite"],
-          "runes": ["fleet footwork", "presence of mind", "legend alacrity", "coup de grace", "magical footwear", "approach velocity", "adaptive force", "armor", "magic resist"]
+          "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "sudden impact", "relentless hunter", "attack speed", "health scaling", "tenacity"]
         },
         {
           "champion": "Lee Sin",
@@ -53,19 +48,19 @@
           "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "sudden impact", "relentless hunter", "attack speed", "health scaling", "tenacity"]
         },
         {
-          "champion": "Yone",
-          "spells": ["flash", "ignite"],
-          "runes": []
-        },
-        {
           "champion": "Veigar",
-          "spells": [],
-          "runes": []
+          "spells": ["flash", "ghost"],
+          "runes": ["arcane comet", "axiom arcanist", "absolute focus", "gathering storm", "presence of mind", "coup de grace", "ability haste", "health scaling", "health scaling"]
         }
       ]
     },
     "bot": {
       "order": [
+        {
+          "champion": "Katarina",
+          "spells": ["flash", "teleport"],
+          "runes": ["conqueror", "triumph", "legend alacrity", "last stand", "sudden impact", "relentless hunter", "attack speed", "health scaling", "tenacity"]
+        },
         {
           "champion": "Jinx",
           "spells": ["flash", "heal"],
