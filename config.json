@@ -78,7 +78,7 @@
         }
       ]
     },
-    "support": {
+    "utility": {
       "order": [
         {
           "champion": "Thresh",
