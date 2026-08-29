@@ -20,6 +20,11 @@ in_game = False
 phase = ''
 have_i_prepicked = False
 
+# Champion ids the logged-in account actually owns (None until first successful fetch).
+# LCU accepts a PATCH pick for an unowned champion ID with no error at the HTTP layer in
+# some client versions, so ownership must be checked ourselves before ever attempting a pick.
+owned_champion_ids = None
+
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
 
 def migrate_config(cfg):
@@ -369,12 +374,31 @@ async def set_recommended_runes(connection, champion_id, position):
     except Exception as e:
         print(f"Could not set recommended runes: {str(e)}")
 
+async def get_owned_champion_ids(connection):
+    """Fetch the set of champion IDs the logged-in account owns (LCU 'lol-champions' plugin,
+    undocumented but community-verified: https://swagger.dysolix.dev/lcu/ -> owned-champions-minimal).
+    Returns None on failure so caller can decide to retry rather than treat as "owns nothing"."""
+    try:
+        resp = await connection.request('get', '/lol-champions/v1/owned-champions-minimal')
+        if hasattr(resp, 'status') and resp.status != 200:
+            print(f"owned-champions-minimal returned status {resp.status}")
+            return None
+        champs = await resp.json() if hasattr(resp, 'json') else resp
+        if not isinstance(champs, list):
+            return None
+        return {c['id'] for c in champs if c.get('id')}
+    except Exception as e:
+        print(f"Failed to fetch owned champions: {str(e)}")
+        return None
+
 @connector.ready
 async def connect(connection):
-    global champions_map, runes_data
+    global champions_map, runes_data, owned_champion_ids
     champions_map = await get_champions_map()
     runes_data = await get_runes_data()
     await load_stat_runes()
+    owned_champion_ids = await get_owned_champion_ids(connection)
+    print(f"Owned champions: {len(owned_champion_ids) if owned_champion_ids else 'unknown (fetch failed)'}")
 
 @connector.ws.register('/lol-matchmaking/v1/ready-check', event_types=('UPDATE',))
 async def ready_check_changed(connection, event):
@@ -471,8 +495,16 @@ async def champ_select_changed(connection, event):
                     pick_number += 1
                     continue
 
-                await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
+                if not is_random and owned_champion_ids is not None and champion_id not in owned_champion_ids:
+                    print(f"{pick_data['champion']} not owned, trying next pick")
+                    pick_number += 1
+                    continue
+
+                resp = await connection.request('patch', '/lol-champ-select/v1/session/actions/%d' % action_id,
                                          data={"championId": champion_id, "completed": True})
+                if hasattr(resp, 'status') and resp.status >= 400:
+                    body = await resp.text() if hasattr(resp, 'text') else ''
+                    raise Exception(f"LCU rejected pick (status {resp.status}): {body}")
                 print(f"Successfully picked {pick_data['champion']} for {assigned_position}")
 
                 # Set summoner spells
@@ -511,27 +543,42 @@ async def champ_select_changed(connection, event):
         if pick_action_id:
             try:
                 role_champions = get_role_champions(assigned_position, config)
-                pick_data = parse_pick_entry(role_champions[0]) if role_champions else None
-                if pick_data:
+                for entry in role_champions:
+                    pick_data = parse_pick_entry(entry)
+                    is_random = pick_data['champion'] == '__RANDOM__'
+
                     # Handle random for pre-pick
-                    if pick_data['champion'] == '__RANDOM__':
+                    if is_random:
                         available = list(champions_map.keys())
-                        if available:
-                            pick_data['champion'] = random.choice(available)
-                            pick_data['spells'] = DEFAULT_SPELLS.get(assigned_position, ['flash', 'ignite'])
+                        if not available:
+                            continue
+                        pick_data['champion'] = random.choice(available)
+                        pick_data['spells'] = DEFAULT_SPELLS.get(assigned_position, ['flash', 'ignite'])
 
                     champion_id = champions_map.get(pick_data['champion'])
-                    if champion_id:
-                        await connection.request('patch', f'/lol-champ-select/v1/session/actions/{pick_action_id}',
-                                                 data={"championId": champion_id, "completed": False})
-                        print(f"Pre-picked {pick_data['champion']} for {assigned_position}")
-                        have_i_prepicked = True
+                    if not champion_id:
+                        continue
 
-                        if pick_data['spells']:
-                            await set_summoner_spells(connection, pick_data['spells'])
+                    if not is_random and owned_champion_ids is not None and champion_id not in owned_champion_ids:
+                        print(f"Skipping pre-pick, {pick_data['champion']} not owned, trying next")
+                        continue
 
-                        if pick_data['runes']:
-                            await set_runes(connection, pick_data['runes'])
+                    resp = await connection.request('patch', f'/lol-champ-select/v1/session/actions/{pick_action_id}',
+                                             data={"championId": champion_id, "completed": False})
+                    if hasattr(resp, 'status') and resp.status >= 400:
+                        body = await resp.text() if hasattr(resp, 'text') else ''
+                        print(f"LCU rejected pre-pick {pick_data['champion']} (status {resp.status}): {body}, trying next")
+                        continue
+
+                    print(f"Pre-picked {pick_data['champion']} for {assigned_position}")
+                    have_i_prepicked = True
+
+                    if pick_data['spells']:
+                        await set_summoner_spells(connection, pick_data['spells'])
+
+                    if pick_data['runes']:
+                        await set_runes(connection, pick_data['runes'])
+                    break
             except Exception as e:
                 print(f"Failed to pre-pick: {str(e)}")
                 print(f"Full error: {traceback.format_exc()}")

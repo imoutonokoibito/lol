@@ -626,12 +626,11 @@ function openRunePicker(currentRunes, callback) {
     for (let i = 6; i < Math.min(9, currentRunes.length); i++) {
       const row = i - 6;
       const n = norm(currentRunes[i]);
-      for (const shard of STAT_SHARDS[row]) {
-        if (norm(shard.cfg) === n || n.includes(norm(shard.cfg)) || norm(shard.cfg).includes(n)) {
-          runePicker.statShards[row] = shard.id;
-          break;
-        }
-      }
+      // Exact match only: substring matching broke here because "health" is
+      // a substring of "healthscaling", so it matched before ever reaching
+      // the real "health scaling" entry later in the row.
+      const shard = STAT_SHARDS[row].find(s => norm(s.cfg) === n);
+      if (shard) runePicker.statShards[row] = shard.id;
     }
   }
 
