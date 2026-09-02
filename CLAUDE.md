@@ -39,8 +39,24 @@ client version, so silently trusting a 2xx response is not safe. Check
 rejected pick (fall through to the next configured layout), never assume
 success from lack-of-exception alone.
 
+**assignedPosition casing**: the champ-select session's
+`myTeam[].assignedPosition` is LOWERCASE (`"top"`, `"jungle"`, `"middle"`,
+`"bottom"`, `"utility"`; `""` in blind/ARAM). Uppercase position strings only
+appear in lobby position-preference fields (different endpoint). Community
+confirmation: sona `normalizePosition` lowercases + matches `'middle'`,
+`'bottom'`, `'utility'`. Any dict keyed by role in `main.py`
+(`role_mapping`, `DEFAULT_SPELLS`) is UPPERCASE-keyed, so `assigned_position`
+must be `.upper()`-normalized at capture. Skipping this silently falls back
+to mid for every role.
+
 ## Known-fixed bugs (don't reintroduce)
 
+- **Wrong role's layouts picked (support got mid champs)** (`main.py`
+  `champ_select_changed`): `assigned_position` was compared raw against
+  UPPERCASE `role_mapping` keys, but the LCU sends it lowercase — every
+  lookup missed and fell to the `'mid'` default, so a UTILITY player got the
+  mid layouts (Ahri → Veigar). Fixed by `.upper()`-normalizing at capture.
+  See "assignedPosition casing" above.
 - **Rune-picker shard mis-render on reopen** (`static/app.js`
   `openRunePicker`): the Defense stat-shard row has both `health` (5011) and
   `health scaling` (5001). Reverse-matching a stored config value with

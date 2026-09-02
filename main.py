@@ -427,7 +427,10 @@ async def champ_select_changed(connection, event):
     local_player_cell_id = event.data['localPlayerCellId']
     for teammate in event.data['myTeam']:
         if teammate['cellId'] == local_player_cell_id:
-            assigned_position = teammate['assignedPosition']
+            # LCU sends champ-select assignedPosition LOWERCASE ("utility", "middle").
+            # Uppercase values only exist on lobby position *preferences* — different endpoint.
+            # Normalize here once; role_mapping/DEFAULT_SPELLS are keyed uppercase.
+            assigned_position = (teammate['assignedPosition'] or '').upper()
             am_i_assigned = True
 
     print(f'Assigned position: {assigned_position}')
