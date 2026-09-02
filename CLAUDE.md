@@ -1,5 +1,10 @@
 # lolq — project rules
 
+> `SPEC.md` is source of truth — cavekit runs implicitly (global hook injects
+> scenario→skill routing every turn; §V read on demand). High-risk zones: LCU
+> field casing/response handling (`main.py` pick state machine), rune picker
+> reverse lookup (`static/app.js`).
+
 **Always `git push` to GitHub on task completion.** Remote: `origin` →
 `https://github.com/imoutonokoibito/lolq.git`, branch `master`. This repo is
 NOT under the clod GitHub-push ban — that ban is `xXhackerlordXx/clod/` only.
